@@ -5,16 +5,14 @@ for file in ~/.{bash_colors,bash_completion,bash_prompt,exports,aliases,function
 done
 unset file
 
-# Set ulimit per session
-ulimit -n 200000
-ulimit -u 2048
-
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
 # Prefer US English and use UTF-8
 export LC_ALL="en_US.UTF-8"
 export LANG="en_US"
+
+export GPG_TTY=$(tty)
 
 # Add tab completion for SSH hostnames based on ~/.ssh/config, ignoring wildcards
 [ -e "$HOME/.ssh/config" ] && complete -o "default" -o "nospace" -W "$(grep "^Host" ~/.ssh/config | grep -v "[?*]" | cut -d " " -f2)" scp sftp ssh
@@ -49,15 +47,14 @@ if hash fasd 2>/dev/null; then
 	_fasd_bash_hook_cmd_complete sb
 fi
 
-eval $(thefuck --alias)
+eval "$(gulp --completion=bash)"
 
 eval "$(hub alias -s)"
 
-if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
-	. $(brew --prefix)/share/bash-completion/bash_completion
-fi
+eval $(thefuck --alias)
 
-eval "$(gulp --completion=bash)"
+export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
+[[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] && . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 
 # travis
 [ -f /Users/gilbarbara/.travis/travis.sh ] && source /Users/gilbarbara/.travis/travis.sh
